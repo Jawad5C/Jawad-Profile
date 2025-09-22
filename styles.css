@@ -935,6 +935,10 @@ body {
     }
     
     /* Mobile-specific improvements */
+    .header {
+        margin-bottom: 40px;
+    }
+    
     .profile-image {
         width: 120px;
         height: 120px;
@@ -953,9 +957,11 @@ body {
     .nav-tabs {
         flex-direction: row;
         gap: 10px;
-        margin: 20px 0;
+        margin: -60px 0 20px 0;
         justify-content: space-between;
         flex-wrap: wrap;
+        position: relative;
+        z-index: 10;
     }
     
     .nav-tabs-left, .nav-tabs-right {
