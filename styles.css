@@ -951,24 +951,27 @@ body {
     }
     
     .nav-tabs {
-        flex-direction: column;
-        gap: 20px;
+        flex-direction: row;
+        gap: 10px;
         margin: 20px 0;
-        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
     }
     
     .nav-tabs-left, .nav-tabs-right {
         display: flex;
-        justify-content: center;
-        gap: 20px;
+        gap: 10px;
         flex-wrap: wrap;
     }
     
     .tab-btn {
-        padding: 15px 25px;
-        font-size: 1rem;
-        width: 140px;
-        min-height: 50px;
+        padding: 12px 18px;
+        font-size: 0.9rem;
+        width: auto;
+        min-width: 100px;
+        min-height: 44px;
+        flex: 1;
+        max-width: 120px;
     }
     
     .tab-content h2 {
@@ -1028,43 +1031,24 @@ body {
     
     /* Mobile adjustments for MD2 and Columbia elements */
     .columbia-pic, .columbia-timeline-pic {
-        width: 120px;
-        height: 120px;
-        left: 50%;
-        transform: translateX(-50%);
-        top: 20px;
+        width: 100px;
+        height: 100px;
         position: relative;
-        margin: 20px auto;
+        left: auto;
+        top: auto;
+        margin: 15px auto;
+        display: block;
     }
     
     .ceo-text, .mvp-link, .columbia-text, .columbia-timeline-text {
         position: relative;
         left: auto;
+        top: auto;
         width: 100%;
         font-size: 0.9rem;
         text-align: center;
-        margin: 10px 0;
+        margin: 5px 0;
         display: block;
-    }
-    
-    .ceo-text {
-        top: auto;
-        margin-top: 10px;
-    }
-    
-    .mvp-link {
-        top: auto;
-        margin-top: 5px;
-    }
-    
-    .columbia-text {
-        top: auto;
-        margin-top: 10px;
-    }
-    
-    .columbia-timeline-text {
-        top: auto;
-        margin-top: 10px;
     }
     
     /* Mobile Experience section layout */
