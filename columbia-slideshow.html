@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Columbia University Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Dancing Script', cursive;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(37, 99, 235, 0.6) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .slideshow-container {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            height: 600px;
+            margin: 20px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: all 1.5s ease-in-out;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide.fade-in {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .slide.slide-left {
+            animation: slideLeft 1.5s ease-in-out;
+        }
+
+        .slide.slide-right {
+            animation: slideRight 1.5s ease-in-out;
+        }
+
+        .slide.zoom-in {
+            animation: zoomIn 1.5s ease-in-out;
+        }
+
+        .slide.rotate-in {
+            animation: rotateIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideLeft {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideRight {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes rotateIn {
+            from { transform: rotate(180deg) scale(0.5); opacity: 0; }
+            to { transform: rotate(0deg) scale(1); opacity: 1; }
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .control-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Dancing Script', cursive;
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #000000;
+            font-size: 36px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            z-index: 10;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Dancing Script', cursive;
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 18px;
+            font-weight: 700;
+            z-index: 10;
+        }
+
+        .margin-text {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 250px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.6;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff6b6b;
+        }
+
+        .margin-text.left {
+            left: 20px;
+        }
+
+        .margin-text.right {
+            right: 20px;
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .margin-text.completed {
+            animation: flashThenPulse 3s ease-in-out;
+        }
+
+        .margin-text.completed span {
+            animation: pulseTextRed 2s ease-in-out infinite;
+        }
+
+        @keyframes flashThenPulse {
+            0% { 
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+            }
+            10% { 
+                background: rgba(255, 255, 255, 0.9);
+                color: #000000;
+            }
+            20% { 
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+            }
+            30% { 
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+            }
+            100% { 
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+            }
+        }
+
+        @keyframes pulseTextRed {
+            0% { 
+                color: white;
+                text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+            }
+            50% { 
+                color: #ff0000;
+                text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+            }
+            100% { 
+                color: white;
+                text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-btn" onclick="goBack()">← Back to Profile</div>
+    <div class="title">Columbia University Gallery</div>
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">6</span>
+    </div>
+    
+            <div class="margin-text left" id="left-text">
+                <span id="left-typed"></span><span class="cursor">|</span>
+            </div>
+    
+    <div class="margin-text right" id="right-text">
+        <span id="right-typed"></span><span class="cursor">|</span>
+    </div>
+    
+    <div class="slideshow-container">
+                <div class="slide active" style="background-image: url('Columbia/0.png'); background-size: 120%;"></div>
+                <div class="slide" style="background-image: url('Columbia/0-1.png');"></div>
+                <div class="slide" style="background-image: url('Columbia/download.jpg');"></div>
+                <div class="slide" style="background-image: url('Columbia/download-1.jpg');"></div>
+                <div class="slide" style="background-image: url('Columbia/download-2.jpg');"></div>
+                <div class="slide" style="background-image: url('Columbia/https___d1e00ek4ebabms.cloudfront.net_production_705b4fc8-3765-453a-8772-9de81467e16d.avif');"></div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" onclick="previousSlide()">Previous</button>
+        <button class="control-btn" onclick="nextSlide()">Next</button>
+        <button class="control-btn" onclick="toggleAutoPlay()">Auto Play</button>
+        <button class="control-btn" onclick="toggleVoiceOver()" id="voice-btn">🔊 Voice Over</button>
+    </div>
+    
+    <!-- Alternative voice over button positioned separately -->
+    <button class="control-btn" onclick="toggleVoiceOver()" id="voice-btn-alt" style="position: fixed; top: 80px; right: 20px; z-index: 1000;">🔊 Voice Over</button>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let autoPlayInterval;
+        let isAutoPlaying = false;
+
+        const transitions = ['fade-in', 'slide-left', 'slide-right', 'zoom-in', 'rotate-in'];
+
+        // Text content for typing effect
+        const leftText = "As Columbia University Admin and Chair of the Kraft Fund, I organized over 20 student organizations for the allocation of funds for novel inter-cultural events.";
+        const rightText = "Managing organizations and teams of student group leaders, teaching them how to draft professional proposals to execution of major campus programs was a major part of my professional responsibilities. Micro-funding and then generating professional reports and charts illustrating the allocation of funds from the million dollar Kraft fund count as significant accomplishments for my tenure at Columbia.";
+
+        let leftTypedIndex = 0;
+        let rightTypedIndex = 0;
+        let typingInterval;
+        let isVoiceOverActive = false;
+        let speechSynthesis = window.speechSynthesis;
+
+        function typeText() {
+            const leftTyped = document.getElementById('left-typed');
+            const rightTyped = document.getElementById('right-typed');
+            const leftTextElement = document.getElementById('left-text');
+            const rightTextElement = document.getElementById('right-text');
+            
+            if (leftTypedIndex < leftText.length) {
+                leftTyped.textContent += leftText[leftTypedIndex];
+                leftTypedIndex++;
+            }
+            
+            if (rightTypedIndex < rightText.length) {
+                rightTyped.textContent += rightText[rightTypedIndex];
+                rightTypedIndex++;
+            }
+            
+            // Stop typing when both texts are complete
+            if (leftTypedIndex >= leftText.length && rightTypedIndex >= rightText.length) {
+                clearInterval(typingInterval);
+                
+                // Remove cursors
+                document.querySelectorAll('.cursor').forEach(cursor => {
+                    cursor.style.display = 'none';
+                });
+                
+                // Add completed class to trigger flash and pulse effect
+                leftTextElement.classList.add('completed');
+                rightTextElement.classList.add('completed');
+            }
+        }
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            
+            // Remove any existing transition classes
+            slides[currentSlide].classList.remove(...transitions);
+            
+            currentSlide = (n + totalSlides) % totalSlides;
+            
+            // Add random transition effect
+            const randomTransition = transitions[Math.floor(Math.random() * transitions.length)];
+            slides[currentSlide].classList.add('active', randomTransition);
+            
+            // Update counter
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function toggleAutoPlay() {
+            if (isAutoPlaying) {
+                clearInterval(autoPlayInterval);
+                isAutoPlaying = false;
+                document.querySelector('.control-btn:last-child').textContent = 'Auto Play';
+            } else {
+                autoPlayInterval = setInterval(nextSlide, 3000);
+                isAutoPlaying = true;
+                document.querySelector('.control-btn:last-child').textContent = 'Stop Auto';
+            }
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function toggleVoiceOver() {
+            const voiceBtn = document.getElementById('voice-btn');
+            const voiceBtnAlt = document.getElementById('voice-btn-alt');
+            
+            if (isVoiceOverActive) {
+                // Stop voice over
+                speechSynthesis.cancel();
+                isVoiceOverActive = false;
+                if (voiceBtn) {
+                    voiceBtn.textContent = '🔊 Voice Over';
+                    voiceBtn.style.background = 'rgba(0, 0, 0, 0.7)';
+                }
+                if (voiceBtnAlt) {
+                    voiceBtnAlt.textContent = '🔊 Voice Over';
+                    voiceBtnAlt.style.background = 'rgba(0, 0, 0, 0.7)';
+                }
+            } else {
+                // Start voice over
+                startVoiceOver();
+                isVoiceOverActive = true;
+                if (voiceBtn) {
+                    voiceBtn.textContent = '🔇 Stop Voice';
+                    voiceBtn.style.background = 'rgba(255, 0, 0, 0.8)';
+                }
+                if (voiceBtnAlt) {
+                    voiceBtnAlt.textContent = '🔇 Stop Voice';
+                    voiceBtnAlt.style.background = 'rgba(255, 0, 0, 0.8)';
+                }
+            }
+        }
+
+        function startVoiceOver() {
+            console.log('startVoiceOver function called');
+            // Check if speech synthesis is supported
+            if (!('speechSynthesis' in window)) {
+                alert('Speech synthesis is not supported in this browser. Please try Chrome, Safari, or Edge.');
+                return;
+            }
+            console.log('Speech synthesis is supported');
+            
+            // Get the text content from the margin text elements, with fallback
+            const leftText = document.getElementById('left-typed').textContent;
+            const rightText = document.getElementById('right-typed').textContent;
+            let fullText = leftText + " " + rightText;
+            
+            // If text is empty (typing animation hasn't finished), use the full text directly
+            if (fullText.trim().length < 50) {
+                fullText = "As Columbia University Admin and Chair of the Kraft Fund, I organized over 20 student organizations to for the allocation of funds for novel inter-cultural events. Managing organizations and teams of student group leaders, teaching them how to draft professional proposals to execution of major campus programs was a major part of my professional responsibilites. Micro-funidng and then generating professional reports and charts illustrating the allocation of funds from the million dollar Kraft fund count as significat accomplishments for my tenure at Columbia";
+            }
+            console.log('Text to speak:', fullText);
+            console.log('Text length:', fullText.length);
+            
+            // Create speech utterance
+            const utterance = new SpeechSynthesisUtterance(fullText);
+            
+            // Configure voice settings for virtual assistant-like voice
+            utterance.rate = 0.85; // Clear, professional speaking rate
+            utterance.pitch = 1.0; // Natural pitch
+            utterance.volume = 0.9; // Good volume
+            
+            // Wait for voices to load
+            function speakWithVoice() {
+                const voices = speechSynthesis.getVoices();
+                console.log('Available voices:', voices.map(v => v.name));
+                
+                // Try to use a clear, professional voice (closest to virtual assistants)
+                const assistantVoice = voices.find(voice => 
+                    voice.name.includes('Samantha') ||
+                    voice.name.includes('Alex') ||
+                    voice.name.includes('Daniel') ||
+                    voice.name.includes('Victoria') ||
+                    voice.name.includes('Karen') ||
+                    voice.name.includes('Susan') ||
+                    voice.name.includes('Kate') ||
+                    voice.name.includes('Fiona') ||
+                    voice.name.includes('Moira') ||
+                    voice.name.includes('Tessa') ||
+                    voice.name.includes('Veena') ||
+                    voice.name.includes('Zira') ||
+                    voice.name.includes('Monica')
+                );
+                
+                if (assistantVoice) {
+                    utterance.voice = assistantVoice;
+                    console.log('Using assistant voice:', assistantVoice.name);
+                } else if (voices.length > 0) {
+                    utterance.voice = voices[0];
+                    console.log('Using default voice:', voices[0].name);
+                }
+                
+                // Handle when speech ends
+                utterance.onend = function() {
+                    console.log('Speech ended successfully');
+                    isVoiceOverActive = false;
+                    const voiceBtn = document.getElementById('voice-btn');
+                    const voiceBtnAlt = document.getElementById('voice-btn-alt');
+                    if (voiceBtn) {
+                        voiceBtn.textContent = '🔊 Voice Over';
+                        voiceBtn.style.background = 'rgba(0, 0, 0, 0.7)';
+                    }
+                    if (voiceBtnAlt) {
+                        voiceBtnAlt.textContent = '🔊 Voice Over';
+                        voiceBtnAlt.style.background = 'rgba(0, 0, 0, 0.7)';
+                    }
+                };
+                
+                // Handle errors
+                utterance.onerror = function(event) {
+                    console.log('Speech synthesis error:', event.error);
+                    isVoiceOverActive = false;
+                    const voiceBtn = document.getElementById('voice-btn');
+                    const voiceBtnAlt = document.getElementById('voice-btn-alt');
+                    if (voiceBtn) {
+                        voiceBtn.textContent = '🔊 Voice Over';
+                        voiceBtn.style.background = 'rgba(0, 0, 0, 0.7)';
+                    }
+                    if (voiceBtnAlt) {
+                        voiceBtnAlt.textContent = '🔊 Voice Over';
+                        voiceBtnAlt.style.background = 'rgba(0, 0, 0, 0.7)';
+                    }
+                };
+                
+                // Start speaking
+                console.log('About to start speaking...');
+                speechSynthesis.speak(utterance);
+                console.log('Speech synthesis started');
+            }
+            
+            // Load voices if not already loaded
+            if (speechSynthesis.getVoices().length === 0) {
+                speechSynthesis.addEventListener('voiceschanged', speakWithVoice);
+            } else {
+                speakWithVoice();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') previousSlide();
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === ' ') {
+                e.preventDefault();
+                toggleAutoPlay();
+            }
+            if (e.key === 'v' || e.key === 'V') {
+                e.preventDefault();
+                toggleVoiceOver();
+            }
+        });
+
+        // Initialize
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        // Start typing effect
+        typingInterval = setInterval(typeText, 50); // Type every 50ms
+        
+        // Start auto-play by default
+        autoPlayInterval = setInterval(nextSlide, 3000);
+        isAutoPlaying = true;
+        document.querySelector('.control-btn:last-child').textContent = 'Stop Auto';
+        
+            // Start voice-over after first user interaction
+            let voiceOverStarted = false;
+            
+            // Try to start automatically first
+            setTimeout(() => {
+                console.log('Attempting automatic voice-over...');
+                startVoiceOver();
+                isVoiceOverActive = true;
+                const voiceBtn = document.getElementById('voice-btn');
+                const voiceBtnAlt = document.getElementById('voice-btn-alt');
+                if (voiceBtn) {
+                    voiceBtn.textContent = '🔇 Stop Voice';
+                    voiceBtn.style.background = 'rgba(255, 0, 0, 0.8)';
+                }
+                if (voiceBtnAlt) {
+                    voiceBtnAlt.textContent = '🔇 Stop Voice';
+                    voiceBtnAlt.style.background = 'rgba(255, 0, 0, 0.8)';
+                }
+            }, 2000);
+            
+            // If automatic start fails, start after first click
+            document.addEventListener('click', function() {
+                if (!voiceOverStarted) {
+                    voiceOverStarted = true;
+                    console.log('Starting voice-over after user interaction...');
+                    setTimeout(() => {
+                        startVoiceOver();
+                        isVoiceOverActive = true;
+                        const voiceBtn = document.getElementById('voice-btn');
+                        const voiceBtnAlt = document.getElementById('voice-btn-alt');
+                        if (voiceBtn) {
+                            voiceBtn.textContent = '🔇 Stop Voice';
+                            voiceBtn.style.background = 'rgba(255, 0, 0, 0.8)';
+                        }
+                        if (voiceBtnAlt) {
+                            voiceBtnAlt.textContent = '🔇 Stop Voice';
+                            voiceBtnAlt.style.background = 'rgba(255, 0, 0, 0.8)';
+                        }
+                    }, 100);
+                }
+            }, { once: true });
+    </script>
+</body>
+</html>

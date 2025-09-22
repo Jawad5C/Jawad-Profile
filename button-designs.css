@@ -1,0 +1,208 @@
+/* BUTTON DESIGN OPTIONS */
+
+/* Option 1: Modern Glassmorphism */
+.tab-btn.glassmorphism {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.tab-btn.glassmorphism:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Option 2: Neon Glow */
+.tab-btn.neon {
+    background: transparent;
+    border: 2px solid #4F46E5;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+    transition: all 0.3s ease;
+}
+
+.tab-btn.neon:hover {
+    background: rgba(79, 70, 229, 0.1);
+    box-shadow: 0 0 30px rgba(79, 70, 229, 0.6);
+    transform: scale(1.05);
+}
+
+/* Option 3: Gradient Modern */
+.tab-btn.gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+}
+
+.tab-btn.gradient:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+/* Option 4: Minimalist Clean */
+.tab-btn.minimalist {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.minimalist:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Option 5: Cyberpunk */
+.tab-btn.cyberpunk {
+    background: linear-gradient(45deg, #ff0080, #00ff80);
+    border: none;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.cyberpunk::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.tab-btn.cyberpunk:hover::before {
+    left: 100%;
+}
+
+.tab-btn.cyberpunk:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+}
+
+/* Option 6: 3D Raised */
+.tab-btn.raised {
+    background: linear-gradient(145deg, #4F46E5, #3730A3);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3), -5px -5px 10px rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.tab-btn.raised:hover {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3), -2px -2px 5px rgba(255, 255, 255, 0.1);
+    transform: translateY(2px);
+}
+
+.tab-btn.raised:active {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+}
+
+/* Option 7: Animated Border */
+.tab-btn.animated-border {
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.animated-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 8px;
+    padding: 2px;
+    background: linear-gradient(45deg, #4F46E5, #7C3AED, #EC4899, #4F46E5);
+    background-size: 300% 300%;
+    animation: gradientShift 3s ease infinite;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.tab-btn.animated-border:hover {
+    background: rgba(79, 70, 229, 0.1);
+}
+
+/* Option 8: Floating Cards */
+.tab-btn.floating {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tab-btn.floating:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Option 9: Retro Synthwave */
+.tab-btn.synthwave {
+    background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
+    border: none;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.synthwave::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
+.tab-btn.synthwave:hover::after {
+    transform: translateX(100%);
+}
+
+.tab-btn.synthwave:hover {
+    box-shadow: 0 0 30px rgba(255, 0, 110, 0.6);
+    transform: scale(1.05);
+}
+
+/* Option 10: Material Design */
+.tab-btn.material {
+    background: #4F46E5;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.tab-btn.material:hover {
+    background: #3730A3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+}
+
+.tab-btn.material:active {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
+}

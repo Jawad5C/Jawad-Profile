@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <!-- Simplex Noise Library -->
+    <script src="https://cdn.jsdelivr.net/npm/simplex-noise@2.4.0/simplex-noise.js"></script>
+    
+    <!-- Custom Cursor -->
+    <div class="cursor">
+        <div class="cursor__circle cursor__circle--small"></div>
+        <div class="cursor__circle cursor__circle--large"></div>
+    </div>
+    
+    <!-- Alessio Atzeni Style Waves -->
+    <canvas id="webgl" style="position: fixed; top: 0; left: -2px; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; outline: none;"></canvas>
+    
+    <script>
+        class Waves {
+            constructor(options) {
+                this.container = options.dom;
+                this.perlin = new SimplexNoise();
+                
+                this.randomness = [];
+                this.parameters = [];
+                this.parameters.factor = 0.045;
+                this.parameters.variation = 0.0004;
+                this.parameters.amplitude = 300;
+                this.parameters.lines = 20;
+                this.parameters.waveColor = { r: 0, g: 255, b: 0, a: 1 }; // Start with Green
+                this.colorIndex = 0;
+                this.colors = [
+                    { r: 0, g: 255, b: 0, a: 1 },    // Green
+                    { r: 255, g: 255, b: 0, a: 1 },  // Yellow
+                    { r: 255, g: 0, b: 0, a: 1 },    // Red
+                    { r: 255, g: 107, b: 53, a: 1 }, // Orange
+                    { r: 128, g: 0, b: 128, a: 1 }   // Purple
+                ];
+                this.startColorTransition();
+                this.parameters.shadowColor = { r: 13, g: 14, b: 76, a: 1 };
+                this.parameters.shadowBlur = 1;
+                this.parameters.lineStroke = 1;
+                this.parameters.speed = 0.005;
+                
+                this.setupCanvas();
+                this.setSizes();
+                this.setupRandomness();
+                this.drawPaths();
+                this.render();
+                this.setupResize();
+            }
+            
+            setupCanvas() {
+                this.context = this.container.getContext('2d');
+                this.container.width = this.width * this.pixelRatio;
+                this.container.height = this.height * this.pixelRatio;
+                this.context.scale(this.pixelRatio, this.pixelRatio);
+            }
+            
+            setSizes() {
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+                this.pixelRatio = Math.min(window.devicePixelRatio, 1.5);
+                this.container.width = this.width;
+                this.container.height = this.height;
+            }
+            
+            setupRandomness() {
+                for (let i = 0, rand = 0; i < this.parameters.lines; i++, rand += this.parameters.factor) {
+                    this.randomness[i] = rand;
+                }
+            }
+            
+            startColorTransition() {
+                const transitionToNextColor = () => {
+                    this.colorIndex = (this.colorIndex + 1) % this.colors.length;
+                    const nextColor = this.colors[this.colorIndex];
+                    
+                    // Smooth transition using GSAP
+                    gsap.to(this.parameters.waveColor, {
+                        r: nextColor.r,
+                        g: nextColor.g,
+                        b: nextColor.b,
+                        duration: 1.5, // 1.5 seconds for smooth transition
+                        ease: "power2.inOut",
+                        onComplete: () => {
+                            // Start next transition after 0.5 seconds
+                            setTimeout(transitionToNextColor, 500);
+                        }
+                    });
+                };
+                
+                // Start the first transition after 2 seconds
+                setTimeout(transitionToNextColor, 2000);
+            }
+            
+            drawPaths() {
+                this.context.shadowColor = "rgba(" + this.parameters.shadowColor.r + ", " + this.parameters.shadowColor.g + ", " + this.parameters.shadowColor.b + "," + this.parameters.shadowColor.a + ")";
+                this.context.shadowBlur = this.parameters.shadowBlur;
+                this.context.lineWidth = this.parameters.lineStroke;
+                
+                for (let i = 0; i <= this.parameters.lines; i++) {
+                    this.context.beginPath();
+                    this.context.moveTo(0, this.height / 2);
+                    
+                    let randomY = 0;
+                    for (let x = 0; x <= this.width; x++) {
+                        randomY = this.perlin.noise3D(x * this.parameters.variation + this.randomness[i], x * this.parameters.variation, 1);
+                        this.context.lineTo(x, this.height / 2 + (this.parameters.amplitude + Math.random() * 0.005) * randomY);
+                    }
+                    
+                    this.alpha = Math.min(Math.abs(randomY) + 0.001, 0.3);
+                    this.context.strokeStyle = "rgba(" + this.parameters.waveColor.r + ", " + this.parameters.waveColor.g + ", " + this.parameters.waveColor.b + "," + (this.alpha * 2) + ")";
+                    this.context.stroke();
+                    this.context.closePath();
+                    this.randomness[i] += this.parameters.speed;
+                }
+            }
+            
+            setupResize() {
+                window.addEventListener('resize', this.resize.bind(this));
+            }
+            
+            resize() {
+                this.setSizes();
+            }
+            
+            render() {
+                this.context.clearRect(0, 0, this.width, this.height);
+                this.drawPaths();
+                
+                setTimeout(() => {
+                    window.requestAnimationFrame(this.render.bind(this));
+                }, 1000 / 60);
+            }
+        }
+        
+        new Waves({
+            dom: document.getElementById('webgl')
+        });
+        
+        // Custom Cursor System
+        const Cursor = (() => {
+            const cursorArea = document.querySelector('.cursor');
+            const cursorSmall = document.querySelector('.cursor__circle--small');
+            const cursorLarge = document.querySelector('.cursor__circle--large');
+
+            if (!cursorSmall || !cursorLarge) {
+                console.error('Cursor elements not found in the DOM.');
+                return null;
+            }
+
+            let smallPos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+            let largePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+            let mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+            const updateCursor = () => {
+                // Simple lerp function
+                const lerp = (start, end, factor) => start + (end - start) * factor;
+                
+                smallPos.x = lerp(smallPos.x, mousePos.x, 0.2);
+                smallPos.y = lerp(smallPos.y, mousePos.y, 0.2);
+
+                largePos.x = lerp(largePos.x, mousePos.x, 0.1);
+                largePos.y = lerp(largePos.y, mousePos.y, 0.1);
+
+                gsap.set(cursorSmall, { 
+                    x: smallPos.x - 5, // Center the 10px circle
+                    y: smallPos.y - 5 
+                });
+                gsap.set(cursorLarge, { 
+                    x: largePos.x - 20, // Center the 40px circle
+                    y: largePos.y - 20 
+                });
+            };
+
+            const handleMouseMove = (e) => {
+                mousePos.x = e.clientX;
+                mousePos.y = e.clientY;
+                
+                // Check if cursor is over white background elements
+                const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
+                if (elementBelow && elementBelow.closest('.white-bg')) {
+                    cursorArea.classList.add('cursor--dark');
+                } else {
+                    cursorArea.classList.remove('cursor--dark');
+                }
+            };
+
+            const handlePointerEnter = (e) => {
+                const pointerType = e.target.getAttribute('data-pointer');
+
+                if (pointerType == 'hover') {
+                    gsap.to(cursorLarge, { scale: 2, opacity: 1, duration: 0.3 });
+                    gsap.to(cursorSmall, { scale: 0, opacity: 0, duration: 0.3 });
+                }
+            };
+
+            const handlePointerLeave = () => {
+                gsap.to(cursorLarge, { scale: 1, opacity: 1, duration: 0.3 });
+                gsap.to(cursorSmall, { scale: 1, opacity: 1, duration: 0.3 });
+            };
+
+            const addPointerEvents = () => {
+                document.querySelectorAll('[data-pointer]').forEach((element) => {
+                    element.addEventListener('mouseenter', handlePointerEnter);
+                    element.addEventListener('mouseleave', handlePointerLeave);
+                });
+            };
+
+            const removePointerEvents = () => {
+                document.querySelectorAll('[data-pointer]').forEach((element) => {
+                    element.removeEventListener('mouseenter', handlePointerEnter);
+                    element.removeEventListener('mouseleave', handlePointerLeave);
+                });
+            };
+
+            const init = () => {
+                window.addEventListener('mousemove', handleMouseMove);
+                addPointerEvents();
+                gsap.ticker.add(updateCursor);
+            };
+
+            const destroy = () => {
+                window.removeEventListener('mousemove', handleMouseMove);
+                removePointerEvents();
+                gsap.ticker.remove(updateCursor);
+            };
+
+            const disable = () => {
+                destroy();
+                cursorArea.classList.add('cursor-hide');
+            }
+
+            return { init, destroy, disable };
+        })();
+
+        // Initialize cursor on non-touch devices
+        document.addEventListener('DOMContentLoaded', () => {
+            const isHandheld = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (!isHandheld) {
+                Cursor.init();
+                console.log('Non-touch device detected. Initializing cursor.');
+            } else {
+                Cursor.disable();
+                console.log('Touch device detected. Disabling cursor.');
+            }
+        });
+    </script>
+    
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="profile-image">
+                <img src="images/profile-pic.jpeg" alt="Profile Picture" id="profileImg">
+                <div class="status-indicator"></div>
+            </div>
+            <h1 class="name">Jawad Ashraf</h1>
+            <p class="title">CEO MD2, Program Director HWH & Pursuit Fellow</p>
+            <p class="location"><i class="fas fa-map-marker-alt"></i>CT and NY</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <div class="nav-tabs-left">
+                <button class="tab-btn active" data-tab="about" data-pointer="hover">About</button>
+                <button class="tab-btn" data-tab="experience" data-pointer="hover">Experience</button>
+            </div>
+            <div class="nav-tabs-right">
+                <button class="tab-btn" data-tab="skills" data-pointer="hover">Skills</button>
+                <button class="tab-btn" data-tab="contact" data-pointer="hover">Contact</button>
+            </div>
+        </nav>
+
+        <!-- Tab Content -->
+        <main class="content">
+            <!-- About Tab -->
+            <section class="tab-content active" id="about">
+                <h2>About Me</h2>
+                <p>I'm a versatile leader with a unique blend of academic achievement and hands-on experience across higher education, nonprofit leadership, and tech innovation. My background spans administrative operations, cross-functional team management, and project execution. With degrees in the sciences, humanities, and international relations—and experience as an Administrator at Columbia University—I bring strategic insight and operational excellence to every role.</p>
+                
+                <p>I'm passionate about creating meaningful experiences and solving complex problems. With a background in technology and a love for innovation, I enjoy working on projects that make a difference.</p>
+                
+                <p>As Director of Bishop Halfway House under New Opportunities Inc., I oversee multiple teams—including Case Managers, Employment Specialists, Monitors, and Program Supervisors—demonstrating strong organizational, interpersonal, and leadership skills. I also served as Chair of the million-dollar Kraft Fund and led Mic Drop Demo (MD2) from inception to MVP as its CEO, showcasing my ability to take complex initiatives from vision to execution.</p>
+                
+                <p>Most recently, I participated in Pursuit's full stack software engineering and AI programs, expanding my technical fluency and positioning me at the intersection of operations and emerging technology.</p>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <h3>5+</h3>
+                        <p>Years Experience</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>50+</h3>
+                        <p>Projects Completed</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>100%</h3>
+                        <p>Client Satisfaction</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Experience Tab -->
+            <section class="tab-content" id="experience">
+                <h2>Experience</h2>
+                
+                <!-- MD2 and Hyperlinks Section -->
+                <div class="experience-highlights">
+                    <div class="columbia-pic"></div>
+                    <a href="MD2%20MTV%20Video%20copy.mp4" class="ceo-text" data-pointer="hover">CEO MIC DROP DEMO</a>
+                    <a href="MD2%20MTV%20Video%20copy.mp4" class="mvp-link" data-pointer="hover">[MVP Stage]</a>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content white-bg">
+                            <h3>Senior Developer</h3>
+                            <p class="company">Tech Company Inc.</p>
+                            <p class="duration">2022 - Present</p>
+                            <p>Leading development teams and architecting scalable solutions.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content white-bg">
+                            <h3>Full Stack Developer</h3>
+                            <p class="company">StartupXYZ</p>
+                            <p class="duration">2020 - 2022</p>
+                            <p>Built end-to-end web applications using modern technologies.</p>
+                        </div>
+                        <!-- Columbia Image and Link -->
+                        <div class="columbia-timeline-pic"></div>
+                        <a href="columbia-slideshow.html" class="columbia-timeline-text" data-pointer="hover">Columbia University Admin & Chair of Kraft Fund</a>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content white-bg">
+                            <h3>Junior Developer</h3>
+                            <p class="company">Digital Agency</p>
+                            <p class="duration">2019 - 2020</p>
+                            <p>Started my journey in web development and learned the fundamentals.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills Tab -->
+            <section class="tab-content" id="skills">
+                <h2>Skills & Technologies</h2>
+                <div class="skills-grid">
+                    <div class="skill-category white-bg">
+                        <h3>Frontend</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">HTML5</span>
+                            <span class="skill-tag">CSS3</span>
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">React</span>
+                            <span class="skill-tag">Vue.js</span>
+                        </div>
+                    </div>
+                    <div class="skill-category white-bg">
+                        <h3>Backend</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Node.js</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">Express</span>
+                            <span class="skill-tag">MongoDB</span>
+                            <span class="skill-tag">PostgreSQL</span>
+                        </div>
+                    </div>
+                    <div class="skill-category white-bg">
+                        <h3>Tools & Others</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Git</span>
+                            <span class="skill-tag">Docker</span>
+                            <span class="skill-tag">AWS</span>
+                            <span class="skill-tag">Figma</span>
+                            <span class="skill-tag">Agile</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Tab -->
+            <section class="tab-content" id="contact">
+                <h2>Get In Touch</h2>
+                <p>I'm always interested in new opportunities and collaborations. Feel free to reach out!</p>
+                
+                <div class="contact-methods">
+                    <a href="mailto:your.email@example.com" class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>your.email@example.com</span>
+                    </a>
+                    <a href="https://linkedin.com/in/yourprofile" class="contact-item" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                        <span>LinkedIn Profile</span>
+                    </a>
+                    <a href="https://github.com/yourusername" class="contact-item" target="_blank">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub Profile</span>
+                    </a>
+                    <a href="tel:+1234567890" class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+1 (234) 567-890</span>
+                    </a>
+                </div>
+
+                <div class="contact-form white-bg">
+                    <h3>Send a Message</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" id="name" name="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Jawad Ashraf. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-dribbble"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
