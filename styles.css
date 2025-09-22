@@ -952,14 +952,16 @@ body {
     
     .nav-tabs {
         flex-direction: column;
-        gap: 15px;
+        gap: 20px;
         margin: 20px 0;
+        align-items: center;
     }
     
     .nav-tabs-left, .nav-tabs-right {
         display: flex;
         justify-content: center;
-        gap: 15px;
+        gap: 20px;
+        flex-wrap: wrap;
     }
     
     .tab-btn {
@@ -1026,32 +1028,61 @@ body {
     
     /* Mobile adjustments for MD2 and Columbia elements */
     .columbia-pic, .columbia-timeline-pic {
-        width: 150px;
-        height: 150px;
-        left: -75px;
-        top: 100px;
+        width: 120px;
+        height: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 20px;
+        position: relative;
+        margin: 20px auto;
     }
     
     .ceo-text, .mvp-link, .columbia-text, .columbia-timeline-text {
-        left: -75px;
-        width: 150px;
+        position: relative;
+        left: auto;
+        width: 100%;
         font-size: 0.9rem;
+        text-align: center;
+        margin: 10px 0;
+        display: block;
     }
     
     .ceo-text {
-        top: 260px;
+        top: auto;
+        margin-top: 10px;
     }
     
     .mvp-link {
-        top: 285px;
+        top: auto;
+        margin-top: 5px;
     }
     
     .columbia-text {
-        top: 50px;
+        top: auto;
+        margin-top: 10px;
     }
     
     .columbia-timeline-text {
-        top: 200px;
+        top: auto;
+        margin-top: 10px;
+    }
+    
+    /* Mobile Experience section layout */
+    .experience-highlights {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 0;
+        padding: 20px;
+    }
+    
+    .timeline {
+        margin-top: 30px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 40px;
     }
 }
 
@@ -1077,14 +1108,11 @@ body {
     }
     
     .columbia-pic, .columbia-timeline-pic {
-        width: 120px;
-        height: 120px;
-        left: -60px;
+        width: 100px;
+        height: 100px;
     }
     
     .ceo-text, .mvp-link, .columbia-text, .columbia-timeline-text {
-        left: -60px;
-        width: 120px;
         font-size: 0.8rem;
     }
 }
