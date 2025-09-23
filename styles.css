@@ -958,7 +958,7 @@ body {
     
     .nav-tabs {
         position: absolute;
-        top: 15px;
+        top: 50px;
         left: 0;
         right: 0;
         flex-direction: row;
